@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/webflow
+		http://www.springframework.org/schema/webflow/spring-webflow-2.4.xsd">
+	
+	<var name="user" class="com.thunderbird.user.model.User" />
+	<view-state id="register" view="registration">
+		
+		<transition on="createAccount" to="saveData" />
+		
+	</view-state>
+	<action-state id="saveData">
+		<evaluate expression="userOperations"></evaluate>
+		<transition on="success" to="success"></transition>
+		<transition on="error" to="error"></transition>
+	</action-state>
+	<view-state id="success" model="user"></view-state>
+	<view-state id="error" model="user">
+		<binder>
+			<binding property="fname"/>
+		</binder>
+	</view-state>
+	
+	
+</flow>

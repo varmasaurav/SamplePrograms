@@ -12,6 +12,7 @@ public class DailyTxn {
 	private String cus_name;
 	private String cus_email;
 	private int loyalty_card_no;
+	private Transaction curr_txn;
 	public int getLoyalty_card_no() {
 		return loyalty_card_no;
 	}
@@ -59,7 +60,7 @@ public class DailyTxn {
 	
 
 	public List<DailyTxn> getData() {
-		// TODO Auto-generated method stub
+		UserService.getTxnData();
 		return null;
 	}
 
@@ -69,16 +70,20 @@ public class DailyTxn {
 		int purchase_amt = this.getPurchase_amt();
 		User temp_user = new User();
 		
-		//Construct the transaction 
-		Transaction curr_txn = new Transaction();
-		curr_txn.setTxn_amt(this.getPurchase_amt());
-		curr_txn.setTxn_date(this.getPurchase_date());
-		curr_txn.setTxn_id(this.getPur_txn_id());
 		
 		//Get User full details
 		UserFullDetails user_full_details = UserService.getUserFullDetails(this, loyalty_no);
-		temp_user.updateLoyaltyPoints(purchase_amt, user_full_details, curr_txn);
+		
+		temp_user.updateLoyaltyPoints(purchase_amt, user_full_details, constructTxn());
 		return temp_user;
+	}
+
+	public Transaction constructTxn() {
+		curr_txn = new Transaction();
+		curr_txn.setTxn_amt(this.getPurchase_amt());
+		curr_txn.setTxn_date(this.getPurchase_date());
+		curr_txn.setTxn_id(this.getPur_txn_id());
+		return curr_txn;
 	}
 
 	public String getCus_email() {

@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.mettl.test.loyalty.model.Transaction;
 import com.mettl.test.loyalty.model.User;
 import com.mettl.test.loyalty.service.UserService;
 
 public class Loyalty {
 	static User user = new User();
+	static Transaction curr_txn;
 	static Map<Integer, User> displayUser = new HashMap<Integer, User>();
 	public static void main(String args[]){
 		
@@ -21,13 +23,22 @@ public class Loyalty {
 			 DailyTxn user_txn_details = (DailyTxn) txn.next();
 			 
 			//loyalty card no to identify the registered customers.
+			//Returns 0 if loyalty card is not found, logic goes in UserService
 			 int loyalty_card_no = user_txn_details.getLoyalty_card_no(); 
 			 
-			 user = user_txn_details.computeLoyaltyAndUpdateUserDetails(); //Returns a user with details.
+			 if(loyalty_card_no==0) {
+				 System.out.println("CUSTOMER NOT REGISTERED FOR LOYALTY POINTS");
+				 break;
+			 }
 			 
+			 user = user_txn_details.computeLoyaltyAndUpdateUserDetails(); //Returns a user with details.
+			 curr_txn = user_txn_details.constructTxn();
+			 			 
 			 //User has done multiple transactions in a day
-			 if(displayUser.containsKey(loyalty_card_no))
-				 user.setTotal_loyalty_points(displayUser.get(loyalty_card_no).getTotal_loyalty_points() + user.getTotal_loyalty_points() );
+			 if(displayUser.containsKey(loyalty_card_no)){
+				 user.setTotal_loyalty_points(displayUser.get(loyalty_card_no).getTotal_loyalty_points() + user.getTotal_loyalty_points());
+			     displayUser.get(loyalty_card_no).getTxn().add(curr_txn);
+			 } 
 			 
 			 //Decorate user instance to get per txn earned points and txn id
 			 
@@ -54,7 +65,8 @@ public class Loyalty {
 					 
 				 }
 			 }
-			 UserService.updateFinalDetails();
+			 UserService.updateFinalDetails(displayUser);
+			 
 			 
 		 }
 		

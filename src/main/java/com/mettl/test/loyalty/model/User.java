@@ -1,5 +1,6 @@
 package com.mettl.test.loyalty.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.mettl.test.loyalty.utility.UtilityEnums.CustomerClass;
@@ -13,7 +14,7 @@ public class User{
 
 	private String cus_name, cus_email;
 	private int total_loyalty_points;
-	private List<Transaction> txn;
+	private List<Transaction> txn = new ArrayList<Transaction>();
 	private CustomerClass cus_class;
 	private int loyalty_card_no;
 	
@@ -66,26 +67,34 @@ public class User{
 	}
 
 	public void updateLoyaltyPoints(int purchase_amt, UserFullDetails user_full_details, Transaction curr_txn) {
-		int earned_points = (int) (purchase_amt * cus_class.pointsPerRupee());
+		int earned_points = (int) (purchase_amt * user_full_details.getCus_class().pointsPerRupee());
 		
 		//Add each txn to Current User
 		curr_txn.setTxn_pts(earned_points);
-		
-		txn.add(curr_txn);
+		//user_full_details.setTxn();
+		txn.add(curr_txn); 
 		this.setTotal_loyalty_points(earned_points + user_full_details.getTotal_loyalty_points());
 		
 		updateCustomerClass(purchase_amt, user_full_details);
 		
 	}
+	
 
 	public void updateCustomerClass(int purchase_amt,
 			UserFullDetails user_full_details) {
 		if((user_full_details.getLastYearPurchaseAmt() + purchase_amt) > 50000)
 			this.setCus_class(CustomerClass.GOLD);
-		if((user_full_details.getLastYearPurchaseAmt() + purchase_amt) > 25000)
+		if((user_full_details.getLastYearPurchaseAmt() + purchase_amt) > 25000 && (user_full_details.getLastYearPurchaseAmt() + purchase_amt) < 50000)
 			this.setCus_class(CustomerClass.SILVER);
-		if((user_full_details.getLastYearPurchaseAmt() + purchase_amt) > 50000)
-			this.setCus_class(CustomerClass.NORMAL);		
+		if((user_full_details.getLastYearPurchaseAmt() + purchase_amt) <= 25000)
+			this.setCus_class(CustomerClass.NORMAL);	
+		
+		updateTotalPurchase(purchase_amt, user_full_details);
+	}
+
+	private void updateTotalPurchase(int purchase_amt, UserFullDetails user_full_details) {
+		
+		user_full_details.setTotal_purchase_amt(purchase_amt + user_full_details.getTotal_purchase_amt());
 	}
 
 	public int getLoyalty_card_no() {
@@ -96,7 +105,7 @@ public class User{
 		this.loyalty_card_no = loyalty_card_no;
 	}
 
-	
+		
 	
 	
 }

@@ -1,3 +1,5 @@
+package com.programs.wordcount;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
